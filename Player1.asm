@@ -1,0 +1,168 @@
+ORG 0000H
+START:                   ;WAIT FOR START
+MOV P1,#0FFH             ;SET TO INPUT
+MOV P2,#0FFH             ;SET TO INPUT
+MOV R1,#0                ;RESET R1
+CLR A                    ;RESET A
+START1:
+JNB P2.0,CHOOSE1         ;JUMP TO CHOOSE1
+JNB P2.1,CHOOSE2         ;JUMP TO CHOOSE2
+JNB P2.2,CHOOSE3         ;JUMP TO CHOOSE3
+LJMP START1              ;LOOP AND KEEP WAITING
+
+CHOOSE1:
+MOV DPTR,#TABLE1         ;INPUT=PROBLEM1
+MOV P2,#0FFH             ;RESET ALL BITS TO 1
+LJMP LOOP
+
+CHOOSE2:
+MOV DPTR,#TABLE2         ;INPUT=PROBLEM2
+MOV P2,#0FFH
+LJMP LOOP
+
+CHOOSE3:
+MOV DPTR,#TABLE3         ;INPUT=PROBLEM3
+MOV P2,#0FFH
+LJMP LOOP
+MOV R5,#230
+LOOP:                    ;CKECK THE INPUT FROM KEYBOARD
+MOV R6,#200
+LOOP1:
+MOV R7,#5
+LOOP2:
+MOV A,R1                 ;STORE WHICH BIT IS NOW
+JB ACC.3,PASS            ;000001000B=8
+MOV P1,#01111111B
+JNB P1.3,KEYF            ;F
+JNB P1.2,KEYB            ;B
+JNB P1.1,KEYA            ;A
+JNB P1.0,KEY0            ;0
+
+MOV P1,#10111111B
+JNB P1.3,KEYE            ;E
+JNB P1.2,KEY3            ;3
+JNB P1.1,KEY2            ;2
+JNB P1.0,KEY1            ;1
+
+MOV P1,#11011111B
+JNB P1.3,KEYD            ;D
+JNB P1.2,KEY6            ;6
+JNB P1.1,KEY5            ;5
+JNB P1.0,KEY4            ;4
+
+MOV P1,#11101111B
+JNB P1.3,KEYC            ;C
+JNB P1.2,KEY9            ;9
+JNB P1.1,KEY8            ;8
+JNB P1.0,KEY7            ;7
+DJNZ R7,LOOP2
+DJNZ R6,LOOP1
+DJNZ R7,LOOP
+LJMP START
+
+PASS:                    ;ANSWER IS CORRECT
+MOV P2,#10111111B        ;SEND MESSAGE TO ANOTHER 8052
+ACALL DELAY
+LJMP START
+
+KEYF:                    ;LABELS OF EACH BUTTONS
+MOV R0,#01110111B
+LJMP CHECK
+KEYB:
+MOV R0,#01111011B
+LJMP CHECK
+KEYA:
+MOV R0,#01111101B
+LJMP CHECK
+KEY0:
+MOV R0,#01111110B
+LJMP CHECK
+KEYE:
+MOV R0,#10110111B
+LJMP CHECK
+KEY3:
+MOV R0,#10111011B
+LJMP CHECK
+KEY2:
+MOV R0,#10111101B
+LJMP CHECK
+KEY1:
+MOV R0,#10111110B
+LJMP CHECK
+KEYD:
+MOV R0,#11010111B
+LJMP CHECK
+KEY6:
+MOV R0,#11011011B
+LJMP CHECK
+KEY5:
+MOV R0,#11011101B
+LJMP CHECK
+KEY4:
+MOV R0,#11011110B
+LJMP CHECK
+KEYC:
+MOV R0,#11100111B
+LJMP CHECK
+KEY9:
+MOV R0,#11101011B
+LJMP CHECK
+KEY8:
+MOV R0,#11101101B
+LJMP CHECK
+KEY7:
+MOV R0,#11101110B
+LJMP CHECK
+
+CHECK:                      ;CHECK WHETHER THE INPUT IS CORRECT
+MOVC A,@A+DPTR
+CJNE A,00H,ERROR            ;R0 LOCATION=00H
+INC R1
+LJMP LOOP
+
+ERROR:                      ;ANSWER IS WRONG
+LJMP LOOP
+
+
+DELAY:                      ;DELAY FOR S
+MOV R5,#30
+DL3:
+MOV R7,#200
+DL2:
+MOV R6,#250
+DL1:
+DJNZ R6,DL1
+DJNZ R7,DL2
+DJNZ R5,DL3
+RET
+
+TABLE1:                     ;PROBLEM1
+DB 11011011B                ;6                          
+DB 11100111B                ;C
+DB 10111101B                ;2
+DB 11101110B                ;7
+DB 11011011B                ;6
+DB 11100111B                ;C
+DB 11011110B                ;4
+DB 01111101B                ;A
+	
+TABLE2:                     ;PROBLEM2
+DB 11010111B                ;D                          
+DB 10111011B                ;3
+DB 11101101B                ;8
+DB 10111110B                ;1
+DB 11101011B                ;9
+DB 01111011B                ;B
+DB 01111101B                ;A
+DB 11101110B                ;7
+	
+TABLE3:                     ;PROBLEM3
+DB 10110111B                ;E                          
+DB 11011011B                ;6
+DB 11011110B                ;4
+DB 11011101B                ;5
+DB 01110111B                ;F
+DB 11101011B                ;9
+DB 01111110B                ;0
+DB 11101110B                ;7
+END
