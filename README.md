@@ -5,7 +5,7 @@ This project is a two-player memory game implemented using 8052 microcontrollers
 ## Project Structure
 
 - **Circuit Diagram**  
-  ![Circuit Diagram](images/Circuitdiagram.png)  
+  ![Circuit Diagram](images/Circuit diagram.png)  
   This diagram shows the complete hardware setup, including the four AT89S52 microcontrollers and connected components.
 
 - **Model Image**  
