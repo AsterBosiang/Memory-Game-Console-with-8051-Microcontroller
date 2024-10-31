@@ -55,5 +55,3 @@ This project is a two-player memory game implemented using 8052 microcontrollers
    ![Draw Display](images/Picture6.png)
 
 ---
-
-This README provides clear setup and gameplay instructions, including visual references for each step in the game.
